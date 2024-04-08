@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body {
+            height: 100vh;
+        }
+
+        #myDiv {
+           background-color: blue;
+           width: 20vw;
+           height: 20vw;
+        }
+    </style>
+
+</head>
+<body>
+
+    <div id="myDiv"></div>
+
+    
+
+<script src="jquery-3.7.1.min.js"></script>
+
+<script>
+
+    //a way of ensuring the DOM has been fully loaded before trying to do stuff with it
+    $(document).ready(function(){
+
+        $('body').click(function(){
+            alert('You clicked the body');
+        });
+
+        $('#myDiv').animate({
+            width: '50vw',
+            height: '10vw'
+        }, 4000);
+
+    });
+
+</script>
+    
+</body>
+</html>
