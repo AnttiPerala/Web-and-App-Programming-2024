@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <div class="myDiv">Every</div>
+    <div class="myDiv">div</div>
+    <div class="myDiv">contains</div>
+    <div class="myDiv">a different</div>
+    <div class="myDiv">word</div>
+
+    <script>
+
+        var x = 5; //create a variable and assign its value to be the number 5
+
+        let myVariable = "Hello";
+
+        const myConstant = 1; //a const cannot be reassigned
+
+        //myConstant++; //gives error
+
+        x++; //no error 
+
+        myVariable = "Hello world"; //not a problem
+
+
+        //when you create a const inside an event, its a new variable every time the event runs (so we are not reassigning it)
+
+        const divs = document.querySelectorAll('.myDiv');
+
+        divs.forEach(function(div){
+            div.addEventListener('click', function(){
+                const myText = div.textContent; //myText is a new variable every time this function runs so we wont get an error about trying to reassign a const
+                alert(myText);
+            })
+        })
+
+
+        
+
+    </script>
+    
+</body>
+</html>

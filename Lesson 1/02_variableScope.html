@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <script>
+
+    var myGlobalVariable = "I am global";
+
+    console.log(myGlobalVariable);
+
+    function exampleFunction(){
+        var myLocalVariable = "I am local";
+        console.log(myLocalVariable);
+        
+    }
+
+    exampleFunction(); //call the function to execute it
+
+    //console.log(myLocalVariable); //gives error because the variable doesnt exist outside the function
+
+    function exampleFunctionForHoisting(){
+       
+        console.log(myLocalVariable);  //because vars get hoisted (prioritized) this will log "undefined"
+         var myLocalVariable = "I am local";
+
+         //console.log(myUnhoistedVariable); //because lets are not hoisted, this will give an actual referenceError
+         let myUnhoistedVariable = "I am unhoisted";
+    }
+
+    exampleFunctionForHoisting(); //call the function to execute it
+
+
+    function blockScopeExample(){
+        if (true){
+            var varVariable = "I am var"; //vars are function scoped
+            let letVariable = "I am let"; //lets and consts are block scoped
+            const constVariable = "I am const";
+        }
+
+        console.log(varVariable); //this will log "I am var" because var is function scoped
+        console.log(letVariable); //should cause an error
+        console.log(constVariable); //error
+    }
+
+    blockScopeExample();
+
+    </script>
+    
+</body>
+</html>
