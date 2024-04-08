@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <input type="text" id="capsLockFixer">
+
+    <div id="output"></div>
+
+    <script>
+
+        let myString = "Hello";
+
+        console.log(myString[0]); //H
+
+        myString[0] = "J"; //does not work, because strings are immutable
+
+        console.log(myString);
+
+        myString += " World"; //this works because its actually creating a new string in the background
+
+        console.log(myString); //Hello World
+
+        console.log(myString.length); //gives the amount of characters in the string
+
+        let theAlphabet = "abcdefghijklmnopqrstuvwxyz";
+
+        //before we can reverse the alphabet, lets learn about str.split()
+
+        let alphabetArray = theAlphabet.split(''); //split by every character
+
+        //another split example using . as the delimiter
+
+        let myURL = "www.mydomain.com";
+
+        let myURLArray = myURL.split('.'); //split by dot
+
+        myURLArray[1] = "ournewdomain";
+
+        //the join method can join an array back to a string
+
+        let myChangedURL = myURLArray.join('.'); //joins the array back to a string
+
+        console.log(myChangedURL);
+
+        let myBackwardsAlphabet = alphabetArray.reverse().join('');
+
+        console.log(myBackwardsAlphabet);
+
+        //slice method
+
+        let stringForSlicing = "Programming is fun!";
+        let slicedString = stringForSlicing.slice(0,11); //gives us "programming"
+        console.log(slicedString);
+        let slicedString2 = stringForSlicing.slice(12,14); //gives us "is"
+        console.log(slicedString2);
+        let slicedString3 = stringForSlicing.slice(12); //gives us "is fun!" (when you only provide one argument, it will go from that point all the way to the end of the string)
+        console.log(slicedString3);
+
+        //CharAt returns a character at a specified index in a string
+
+        let myLowerCaseString = "antti was not paying attention and forgot to capitalize the first character";
+
+        //lets see how toUpperCase can help
+        let convertedToUpperCase = myLowerCaseString.toUpperCase();
+
+        console.log(convertedToUpperCase);
+
+        myLowerCaseString = myLowerCaseString.charAt(0).toUpperCase() + myLowerCaseString.slice(1); //this is called string concatenation
+
+        console.log(myLowerCaseString);
+
+        //caps lock fixer
+
+        let capsLockFixer = document.getElementById("capsLockFixer");
+
+        capsLockFixer.addEventListener("keyup", function(event){
+            const textToFix = this.value;
+            const fixedText = textToFix.toLowerCase();
+            document.getElementById("output").textContent = fixedText;
+        })
+
+        //indexOf can be used to search for a string from another string
+
+        const myHaystack = "So today we went to the doctor with my son. He had to take a blood test. Unfortunately he is very scared of needles. What helped was the local anesthesia lotion that made the whole operation pain free.";
+
+        if (myHaystack.indexOf('needle') !== -1){
+            console.log("This haystack contains a needle. It is at position " + myHaystack.indexOf('needle'));
+        }
+
+
+
+    </script>
+    
+</body>
+</html>
