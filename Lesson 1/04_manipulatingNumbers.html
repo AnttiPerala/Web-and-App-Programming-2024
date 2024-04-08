@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <script>
+
+        let myNumber = 5;
+
+        myNumber++; //increment by one
+
+        console.log(myNumber);
+
+        myNumber += 2; //take the existing value of my number and add two to it
+
+        console.log(myNumber);
+
+        let mySecondNumber = 3;
+
+        console.log(myNumber + mySecondNumber); //11
+
+        console.log(myNumber - mySecondNumber); //5
+
+        console.log(myNumber * mySecondNumber); //24
+
+        console.log(myNumber / mySecondNumber); //2.6666666
+
+        myNumber--; //decrement by one
+
+        console.log(myNumber); //7
+
+        //converting a string to a number
+
+        let myString = "5";
+
+        console.log(myString + myString); //55
+
+        let convertedString = parseInt(myString);
+
+        console.log(convertedString + convertedString); //10
+
+        let myProblematicNumberString = "abc";
+
+        let anotherConvertedString = parseInt(myProblematicNumberString);
+
+        console.log(anotherConvertedString); //NaN
+
+        let anotherNumberString = "10";
+
+        let conversionUsingNumber = Number(anotherNumberString); //Number() can also convert a string to a number
+
+        console.log(conversionUsingNumber);
+
+        let myFloat = 1.143325;
+
+        let floatConversionUsingNumber = Number(myFloat);
+
+        console.log(floatConversionUsingNumber);
+
+        let parsingAFloatToAnInt = parseInt(myFloat);
+
+        console.log(parsingAFloatToAnInt); //1
+
+
+
+    </script>
+    
+</body>
+</html>

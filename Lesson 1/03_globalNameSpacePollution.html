@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <button id="incrementButton">Increment</button>
+    
+    <script>
+
+        var globalCounter = 0;
+
+        document.getElementById("incrementButton").addEventListener('click', incrementCounter);
+
+        function incrementCounter() {
+            globalCounter++;
+            console.log(globalCounter);
+        }
+
+    </script>
+
+
+    <script>
+
+        var globalCounter = 10;
+        
+    </script>
+
+    <script>
+        //another obvious example using a loop
+
+        var i = 100;
+
+        for (i = 0; i < 10; i++) { //the loop sets the global variable i to 0, which might be confusing
+            console.log(i);
+        }
+
+
+
+    </script>
+
+</body>
+</html>
