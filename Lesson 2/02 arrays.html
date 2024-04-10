@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <script>
+
+        //creating an array
+
+        let fruits = ['banana', 'orange', 'apple', 'mango'];
+
+        console.log('Original fruits array: ', fruits);
+
+        //adding an element to the array
+
+        fruits.push('lemon');
+
+        console.log('Fruits array after push: ', fruits);
+
+        //removing an element from the array
+
+        let poppedFruit = fruits.pop(); //removes the last element and strores the removed element in the variable
+
+        console.log('Fruits array after pop: ', fruits); // ['Banana', 'Orange', 'Apple', 'Mango']
+        console.log('Popped fruit ', poppedFruit); //lemon
+
+        //adding an element to the beginning of an array
+        fruits.unshift('kiwi');
+        console.log('Fruits array after unshift: ', fruits); // ['Kiwi', 'Banana', 'Orange', 'Apple', 'Mango']
+
+        //removing an element from the beginning of an array
+        fruits.shift();
+        console.log('Fruits array after shift: ', fruits); // ['Banana', 'Orange', 'Apple', 'Mango']
+
+        //using array.map to create a new array by transforming each element
+        //simple mapping example
+        let allCapsFruits = fruits.map(fruit => fruit.toUpperCase()); //"fruit" here is the name of the thing we are passing in to the fat arrow function. It could be named anything in here, but fruit makes sense, because we are iterating over fruits
+
+        console.log('allCapsFruits ', allCapsFruits);
+
+        //if we need to change only the first character to upper case, we need a bit longer expression:
+        let upperCaseFruits = fruits.map(fruit => fruit.charAt(0).toUpperCase() + fruit.slice(1));
+
+        console.log('upperCaseFruits ', upperCaseFruits);
+
+        //using array.filter to create a new array by filtering out elements
+
+        let longFruits = fruits.filter(fruit => fruit.length > 5);
+
+        console.log('longFruits ', longFruits);
+
+        //the some() array method is used to test whether at least one element in an array passes a test
+
+        const hasFruitStartingWithA = fruits.some(fruit => fruit.startsWith('a'));
+
+        console.log('hasFruitStartingWithA: ', hasFruitStartingWithA); //logs true because of the fruit "apple"
+
+
+
+    </script>
+    
+</body>
+</html>
