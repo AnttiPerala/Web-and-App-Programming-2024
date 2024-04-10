@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+
+        body {
+            font-family: 'Open-sans', sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 90vh;
+            gap: 8vh;
+        }
+
+        button {
+
+            display: inline-block;
+            outline: 0;
+            border: 0;
+            cursor: pointer;
+            background-color: #4299e1;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 16px;
+            border-bottom: 4px solid #2b6cb0;
+            font-weight: 700;
+            color: white;
+            line-height: 26px;
+        }
+
+        #outputText {
+            font-size: 2rem;
+        }
+
+        @font-face {
+            font-family: Open-sans;
+            src: url('OpenSans-VariableFont_wdth,wght.ttf');
+        }
+
+        
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>SPEED READER</h1>
+
+        <textarea id="inputText" cols="30" rows="10"></textarea>
+
+        <div id="controlButtons">
+            <button id="decreaseSpeed">-</button>
+            <button id="startButton">Start</button>
+            <button id="increaseSpeed">+</button>
+        </div>
+
+        <div id="outputText">Click start to begin</div>
+
+    </div>
+
+    <script>
+        const textInput = document.getElementById('inputText'); //gives us the input text area element
+        const textOutput = document.getElementById('outputText'); //gives us the output div element which is used for displaying the text
+        const startButton = document.getElementById('startButton'); //gives us the start button element
+        const decreaseSpeed = document.getElementById('decreaseSpeed'); //gives us the decrease speed button element
+        const increaseSpeed = document.getElementById('increaseSpeed'); //gives us the increase speed button element
+
+        let speed = 200; //means that we will flash five words per second
+        let wordsShown = 0; //this variable will keep track of how many words have been shown
+        let textArray = []; //this array will hold the text that we will be displaying, each word in its own element
+
+        //add the needed event listeners
+
+        textInput.addEventListener('keyup', handleTextInput);
+        textInput.addEventListener('input', handleTextInput); //works also when copy pasting with the right click context menu
+
+        function handleTextInput(event){
+
+            const receivedText = event.target.value; //gives us the value of the input text area
+
+            console.log('Text input updated: ', receivedText);
+
+            textArray = receivedText.split(' '); //splits the text into an array of words
+
+            console.log('textArray: ', textArray);
+
+            wordsShown = 0; //lets start from the beginning for next text
+
+        }
+
+        //this function handles displaying the text word by word
+
+        function displayNextWord(){
+            if (wordsShown < textArray.length){
+
+                let currentWord = textArray[wordsShown]; //gives us the current word
+                textOutput.textContent = currentWord; //displays the current word
+                wordsShown++; //increments the wordsShown variable
+
+            }
+        }
+
+
+    </script>
+
+</body>
+
+</html>
