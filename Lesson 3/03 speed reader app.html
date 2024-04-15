@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body {
+            font-family: 'Open-sans', sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 90vh;
+            gap: 8vh;
+        }
+
+        button {
+
+            display: inline-block;
+            outline: 0;
+            border: 0;
+            cursor: pointer;
+            background-color: #4299e1;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 16px;
+            border-bottom: 4px solid #2b6cb0;
+            font-weight: 700;
+            color: white;
+            line-height: 26px;
+        }
+
+        #outputText {
+            font-size: 2rem;
+        }
+
+        @font-face {
+            font-family: Open-sans;
+            src: url('OpenSans-VariableFont_wdth,wght.ttf');
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>SPEED READER</h1>
+
+        <textarea id="inputText" cols="140" rows="10"></textarea>
+
+        <div id="controlButtons">
+            <button id="decreaseSpeed">-</button>
+            <button id="startButton">Start</button>
+            <button id="increaseSpeed">+</button>
+        </div>
+
+        <div id="outputText">Click start to begin</div>
+
+    </div>
+
+    <script>
+        const textInput = document.getElementById('inputText'); //gives us the input text area element
+        const textOutput = document.getElementById('outputText'); //gives us the output div element which is used for displaying the text
+        const startButton = document.getElementById('startButton'); //gives us the start button element
+        const decreaseSpeed = document.getElementById('decreaseSpeed'); //gives us the decrease speed button element
+        const increaseSpeed = document.getElementById('increaseSpeed'); //gives us the increase speed button element
+
+        let speed = 200; //means that we will flash five words per second
+        let wordsShown = 0; //this variable will keep track of how many words have been shown
+        let textArray = []; //this array will hold the text that we will be displaying, each word in its own element
+        let timeOutInterval; //we are creating this variable already without assinging any value to it, for scoping purposes (giving it global scope)
+
+        //add the needed event listeners
+
+        textInput.addEventListener('keyup', handleTextInput);
+        textInput.addEventListener('input', handleTextInput); //works also when copy pasting with the right click context menu
+
+        function handleTextInput(event) {
+
+            const receivedText = event.target.value; //gives us the value of the input text area
+
+            textArray = receivedText.split(/\s+/); // regular expressions are placed between two forward slash characters /. The backslash escapes s giving it a special meaning = any whitespace character, including space, newline, tab etc. The + means one or more. 
+
+            wordsShown = 0; //lets start from the beginning for next text
+
+        }
+
+        //starting and stopping the word display
+        startButton.addEventListener('click', startOrStop);
+
+        //change the speed
+        decreaseSpeed.addEventListener('click', () => {
+            speed += 40;
+            clearTimeout(timeOutInterval);
+            timeOutInterval = setTimeout(displayNextWord, speed);
+            console.log('speed: ', speed);
+        });
+
+        increaseSpeed.addEventListener('click', () => {
+            speed -= 10;
+            // Ensure speed is at least 10
+            if (speed < 1) {
+                speed = 10;
+            }
+            clearTimeout(timeOutInterval);
+            timeOutInterval = setTimeout(displayNextWord, speed);
+            console.log('speed: ', speed);
+        });
+
+
+        function startOrStop() {
+            if (startButton.textContent === 'Start') { //we want to start the execution of the loop since the button we clicked said "start"
+                displayNextWord();
+                startButton.textContent = 'Stop'; //now the button says "stop"
+            } else if (startButton.textContent === 'Stop') {
+                clearTimeout(timeOutInterval); //this will stop the timeOut, so the displaying of the words should stop
+                startButton.textContent = 'Start'; //now the button says "start" again
+            } else if (startButton.textContent === 'Restart'){
+                wordsShown = 0;
+                displayNextWord();
+                startButton.textContent = 'Stop'; //now the button says "stop"
+            }
+        }
+
+        //this function handles displaying the text word by word
+
+        function displayNextWord() {
+            if (wordsShown < textArray.length) {
+                let currentWord = textArray[wordsShown]; //gives us the current word
+                let currentSpeed = speed; //creating a temp currentSpeed variable, so that the speed setting doesnt change without user clicking on the speed controls
+                textOutput.textContent = currentWord; //displays the current word
+                wordsShown++; //increments the wordsShown variable
+
+                const specialEndPatterns = ['.', '!', '?', '."', '!"', '?"']; //these are the characters that require a slightly longer pause
+
+                if (specialEndPatterns.some(pattern => currentWord.endsWith(pattern))){
+                        currentSpeed += 300;
+                }
+
+                if (currentWord.lenght > 10){
+                    currentSpeed += 200;
+                }
+
+
+                timeOutInterval = setTimeout(displayNextWord, currentSpeed);
+
+            } else {
+                startButton.textContent = 'Restart';
+            }
+        }
+
+
+    </script>
+
+</body>
+
+</html>
