@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objects</title>
+</head>
+<body>
+
+    <script>
+
+        let slide1 = {
+            id: 1,
+            title: "Welcome to my slideshow!",
+            mainText: "In this slideshow, you are going to learn about JavaScript objects.",
+            background: "#333"
+        };
+
+        
+        let slide2 = {
+            id: 1,
+            title: "Second page of the slideshow",
+            mainText: "I was created with a different object!",
+            background: "#EE1111"
+        };
+
+
+        function writeSlideToPage(slide){
+            let title = document.createElement("h1");
+            title.textContent = slide.title;
+            let mainText = document.createElement("p");
+            mainText.textContent = slide.mainText;
+            let slideWrapper = document.createElement("div");
+            slideWrapper.style.backgroundColor = slide.background;
+            slideWrapper.appendChild(title);
+            slideWrapper.appendChild(mainText);
+            document.body.appendChild(slideWrapper);
+           
+        }
+
+
+    </script>
+    
+</body>
+</html>

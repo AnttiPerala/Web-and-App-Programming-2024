@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objects</title>
+</head>
+<body>
+
+    <script>
+
+       /*  let slide1 = {
+            id: 1,
+            title: "Welcome to my slideshow!",
+            mainText: "In this slideshow, you are going to learn about JavaScript objects.",
+            background: "#333"
+        };
+
+        
+        let slide2 = {
+            id: 1,
+            title: "Second page of the slideshow",
+            mainText: "I was created with a different object!",
+            background: "#EE1111"
+        }; */
+
+        //an object constructor function
+
+        function Slide(myId, myTitle, myMainText, myBackground){
+            this.id = myId,
+            this.title = myTitle,
+            this.mainText = myMainText,
+            this.background = myBackground;
+        }
+
+        let slide1 = new Slide(1, "Welcome to my slideshow!", "In this slideshow, you are going to learn about JavaScript objects.", "#33D");
+        let slide2 = new Slide(2, "Second page of the slideshow", "I was created with a different object!", "#DD1");
+
+
+        function writeSlideToPage(slide){
+            let title = document.createElement("h1");
+            title.textContent = slide.title;
+            let mainText = document.createElement("p");
+            mainText.textContent = slide.mainText;
+            let slideWrapper = document.createElement("div");
+            slideWrapper.style.backgroundColor = slide.background;
+            slideWrapper.appendChild(title);
+            slideWrapper.appendChild(mainText);
+            document.body.appendChild(slideWrapper);
+           
+        }
+
+
+    </script>
+    
+</body>
+</html>
