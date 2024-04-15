@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objects</title>
+
+    <style>
+        button {
+            display: inline-block;
+            outline: 0;
+            border: 0;
+            cursor: pointer;
+            background-color: #e14242;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 16px;
+            border-bottom: 4px solid #b02b2b;
+            font-weight: 700;
+            color: white;
+            line-height: 26px;
+        }
+
+        .slideWrapper {
+            min-height: 80vh;
+            padding: 1rem;
+            margin: 1rem;
+            border: 1px black solid;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="ui">
+
+        <button id="btnPrevious">Previous</button>
+        <button id="btnAddNew">Add New Slide</button>
+        <button id="btnNext">Next</button>
+        <button id="btnStart">Start Presentation</button>
+
+    </div>
+
+    <div id="slideContainer"></div>
+
+    <script>
+
+        const slideContainer = document.querySelector('#slideContainer');
+        const btnPrevious = document.querySelector('#btnPrevious');
+        const btnStart = document.querySelector('#btnStart');
+        const btnNext = document.querySelector('#btnNext');
+        const btnAddNew = document.querySelector('#btnAddNew');
+
+        //create a master object for slideshows in order to demonstrate nested objects
+
+        let slideshow = {
+            slides: [],
+            currentSlideIndex: 0,
+            writeSlideToPage: function () {
+                slideContainer.innerHTML = ""; //clear out the previous slide
+                let slide = this.slides[this.currentSlideIndex];
+                let title = document.createElement("h1");
+                title.contentEditable = "true";
+                title.textContent = slide.title;
+                let mainText = document.createElement("p");
+                mainText.contentEditable = "true";
+                mainText.textContent = slide.mainText;
+                let slideWrapper = document.createElement("div");
+                slideWrapper.classList.add("slideWrapper");
+                slideWrapper.style.backgroundColor = slide.background;
+                slideWrapper.appendChild(title);
+                slideWrapper.appendChild(mainText);
+                slideContainer.appendChild(slideWrapper);
+            }
+        };
+
+
+        //an object constructor function
+        function Slide(myId, myTitle, myMainText, myBackground) {
+            this.id = myId,
+                this.title = myTitle,
+                this.mainText = myMainText,
+                this.background = myBackground;
+        }
+
+        slideshow.slides.push(new Slide(1, "Welcome to my slideshow!", "In this slideshow, you are going to learn about JavaScript objects.", "#33D"));
+        slideshow.slides.push(new Slide(2, "Second page of the slideshow", "I was created with a different object!", "#DD1"));
+
+        //EVENT LISTENERS
+        btnNext.addEventListener('click', () => {
+            slideshow.currentSlideIndex++;
+            slideshow.writeSlideToPage();
+        }); 
+
+        btnPrevious.addEventListener('click', () => {
+            slideshow.currentSlideIndex--;
+            slideshow.writeSlideToPage();
+        });
+
+        btnAddNew.addEventListener('click', () => {
+            let newSlide = new Slide(slideshow.slides.length + 1, "New Slide", "This slide was created with a constructor function.", "#fff");
+            slideshow.slides.push(newSlide);
+            slideshow.currentSlideIndex = slideshow.slides.length - 1;
+            slideshow.writeSlideToPage();
+        });
+
+
+        slideshow.writeSlideToPage(); //write the first slide to the page
+
+    </script>
+
+</body>
+
+</html>
