@@ -38,11 +38,16 @@
 
         #outputText {
             font-size: 2rem;
+            min-height: 160px;
         }
 
         @font-face {
             font-family: Open-sans;
             src: url('OpenSans-VariableFont_wdth,wght.ttf');
+        }
+
+        #textSlider, #inputText {
+            width: 75%;
         }
     </style>
 
@@ -54,6 +59,11 @@
 
         <h1>SPEED READER</h1>
 
+        <div id="settings">
+            <label for ="fontSize">Font Size:</label>
+            <input type="number" id="fontSize" value="32">
+        </div>
+
         <textarea id="inputText" cols="140" rows="10"></textarea>
 
         <div id="controlButtons">
@@ -64,6 +74,8 @@
 
         <div id="outputText">Click start to begin</div>
 
+        <input type="range" id="textSlider" value="0">
+
     </div>
 
     <script>
@@ -72,6 +84,8 @@
         const startButton = document.getElementById('startButton'); //gives us the start button element
         const decreaseSpeed = document.getElementById('decreaseSpeed'); //gives us the decrease speed button element
         const increaseSpeed = document.getElementById('increaseSpeed'); //gives us the increase speed button element
+        const progressSlider = document.getElementById('textSlider'); //gives us the progress slider element
+        const fontSize = document.getElementById('fontSize'); //gives us the font size element
 
         let speed = 200; //means that we will flash five words per second
         let wordsShown = 0; //this variable will keep track of how many words have been shown
@@ -89,6 +103,8 @@
 
             textArray = receivedText.split(/\s+/); // regular expressions are placed between two forward slash characters /. The backslash escapes s giving it a special meaning = any whitespace character, including space, newline, tab etc. The + means one or more. 
 
+            progressSlider.max = textArray.length-1; //we are setting the maximum value of the slider to the total number of words to show
+
             wordsShown = 0; //lets start from the beginning for next text
 
         }
@@ -98,10 +114,9 @@
 
         //change the speed
         decreaseSpeed.addEventListener('click', () => {
-            speed += 40;
-            clearTimeout(timeOutInterval);
-            timeOutInterval = setTimeout(displayNextWord, speed);
-            console.log('speed: ', speed);
+            speed += 40; //makes the display of a word last 40 ms longer
+            clearTimeout(timeOutInterval); //housekeeping to clear any previous timeouts. This makes sure only one timeout is running.
+            timeOutInterval = setTimeout(displayNextWord, speed); //creating a new timeout with the new changed speed
         });
 
         increaseSpeed.addEventListener('click', () => {
@@ -112,7 +127,17 @@
             }
             clearTimeout(timeOutInterval);
             timeOutInterval = setTimeout(displayNextWord, speed);
-            console.log('speed: ', speed);
+        });
+
+        //check if the slider was dragged
+        progressSlider.addEventListener('input', function() {
+            wordsShown = this.value;
+            textOutput.textContent = textArray[wordsShown]; //show the correct word from the array of words on the page based on the slider position
+        });
+
+        //font size changer
+        fontSize.addEventListener('input', function() {
+            textOutput.style.fontSize = this.value + 'px'; //this will change the font size of the output text
         });
 
 
@@ -124,7 +149,7 @@
                 clearTimeout(timeOutInterval); //this will stop the timeOut, so the displaying of the words should stop
                 startButton.textContent = 'Start'; //now the button says "start" again
             } else if (startButton.textContent === 'Restart'){
-                wordsShown = 0;
+                wordsShown = 0; //starting from the beginning
                 displayNextWord();
                 startButton.textContent = 'Stop'; //now the button says "stop"
             }
@@ -136,7 +161,8 @@
             if (wordsShown < textArray.length) {
                 let currentWord = textArray[wordsShown]; //gives us the current word
                 let currentSpeed = speed; //creating a temp currentSpeed variable, so that the speed setting doesnt change without user clicking on the speed controls
-                textOutput.textContent = currentWord; //displays the current word
+                textOutput.textContent = currentWord; //displays the current word on the html page
+                progressSlider.value = wordsShown; //updates the progress slider to show the current word number
                 wordsShown++; //increments the wordsShown variable
 
                 const specialEndPatterns = ['.', '!', '?', '."', '!"', '?"']; //these are the characters that require a slightly longer pause
@@ -145,7 +171,7 @@
                         currentSpeed += 300;
                 }
 
-                if (currentWord.lenght > 10){
+                else if (currentWord.lenght > 10){
                     currentSpeed += 200;
                 }
 
