@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "title": "Welcome to my slideshow!",
+        "mainText": "In this slideshow, you are going to learn about JavaScript objects.",
+        "backgroundColor": "#33D",
+        "backgroundImage": null
+    },
+    {
+        "id": 2,
+        "title": "Second page of the slideshow",
+        "mainText": "I was created with a different object!",
+        "backgroundColor": "#DD1",
+        "backgroundImage": null
+    }
+]
