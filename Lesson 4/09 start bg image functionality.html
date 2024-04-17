@@ -27,6 +27,8 @@
             padding: 1rem;
             margin: 1rem;
             border: 1px black solid;
+            background-size: cover;
+            background-position: center;
         }
 
         #ui div {
@@ -48,6 +50,7 @@
 
         <div id="toolsAndPropertiesRow">
             <input type="color" id="colorPicker" value="#11B">
+            <input type="file" id="fileBG">
         </div>
 
         
@@ -64,6 +67,7 @@
         const btnNext = document.querySelector('#btnNext');
         const btnAddNew = document.querySelector('#btnAddNew');
         const colorPicker = document.querySelector('#colorPicker');
+        const fileBG = document.querySelector('#fileBG');
 
         //create a master object for slideshows in order to demonstrate nested objects
 
@@ -84,6 +88,10 @@
                 let slideWrapper = document.createElement("div");
                 slideWrapper.classList.add("slideWrapper");
                 slideWrapper.style.backgroundColor = slide.backgroundColor;
+                if (slide.backgroundImage) {
+                    console.log('has a bg: ', slide.backgroundImage);
+                    slideWrapper.style.backgroundImage = `url(${slide.backgroundImage.name})`;
+                }
                 slideWrapper.appendChild(title);
                 slideWrapper.appendChild(mainText);
                 slideContainer.appendChild(slideWrapper); //adding the whole slide element to the page
@@ -143,6 +151,14 @@
             let slide = slideshow.slides[slideshow.currentSlideIndex]; //get the current slide object
             slide.backgroundColor = colorPicker.value; //set the background color of the slide to the color picker value
             slideshow.writeSlideToPage(); //write the changes to the page
+        });
+
+        //Background image file picker
+        fileBG.addEventListener('change', () => {
+            console.log('file picker change');
+            let slide = slideshow.slides[slideshow.currentSlideIndex];
+            slide.backgroundImage = fileBG.files[0];
+            slideshow.writeSlideToPage();
         });
 
         //event listeners here wont work for dynamically added elements
