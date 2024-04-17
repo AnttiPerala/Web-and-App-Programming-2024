@@ -63,15 +63,21 @@
                 let title = document.createElement("h1");
                 title.contentEditable = "true";
                 title.textContent = slide.title;
+                title.onblur = () => this.updateSlideshow('title', title.textContent);
                 let mainText = document.createElement("p");
                 mainText.contentEditable = "true";
                 mainText.textContent = slide.mainText;
+                mainText.onblur = () => this.updateSlideshow('mainText', mainText.textContent);
                 let slideWrapper = document.createElement("div");
                 slideWrapper.classList.add("slideWrapper");
                 slideWrapper.style.backgroundColor = slide.background;
                 slideWrapper.appendChild(title);
                 slideWrapper.appendChild(mainText);
                 slideContainer.appendChild(slideWrapper); //adding the whole slide element to the page
+            },
+            updateSlideshow: function (property, value) {
+                let slide = this.slides[this.currentSlideIndex];
+                slide[property] = value;
             }
         };
 
@@ -114,6 +120,15 @@
             slideshow.currentSlideIndex = slideshow.slides.length - 1;
             slideshow.writeSlideToPage();
         });
+
+        //event listeners here wont work for dynamically added elements
+        //here we are solving the problem using event delegation
+       /*  document.body.addEventListener('click', (event) => {
+            if (event.target.tagName === 'H1'){
+                alert("Click!");
+            }
+            
+        }); */
 
 
         slideshow.writeSlideToPage(); //write the first slide to the page
