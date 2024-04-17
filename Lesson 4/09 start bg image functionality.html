@@ -90,7 +90,7 @@
                 slideWrapper.style.backgroundColor = slide.backgroundColor;
                 if (slide.backgroundImage) {
                     console.log('has a bg: ', slide.backgroundImage);
-                    slideWrapper.style.backgroundImage = `url(${slide.backgroundImage.name})`;
+                    slideWrapper.style.backgroundImage = `url(${slide.backgroundImage})`;
                 }
                 slideWrapper.appendChild(title);
                 slideWrapper.appendChild(mainText);
@@ -156,10 +156,17 @@
         //Background image file picker
         fileBG.addEventListener('change', () => {
             console.log('file picker change');
-            let slide = slideshow.slides[slideshow.currentSlideIndex];
-            slide.backgroundImage = fileBG.files[0];
-            slideshow.writeSlideToPage();
+            const reader = new FileReader();
+            reader.onload = function (event) { //triggers when the file is read
+                let slide = slideshow.slides[slideshow.currentSlideIndex];
+                slide.backgroundImage = event.target.result;
+                slideshow.writeSlideToPage();
+            };
+
+            reader.readAsDataURL(fileBG.files[0]); //the result of this is handles on the .onload function
         });
+            
+ 
 
         //event listeners here wont work for dynamically added elements
         //here we are solving the problem using event delegation
