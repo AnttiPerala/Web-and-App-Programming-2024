@@ -114,10 +114,11 @@
             }
         });
 
+        //adding new slides from the button
         btnAddNew.addEventListener('click', () => {
             let newSlide = new Slide(slideshow.slides.length + 1, "New Slide", "This slide was created with a constructor function.", "#fff");
-            slideshow.slides.push(newSlide);
-            slideshow.currentSlideIndex = slideshow.slides.length - 1;
+            slideshow.slides.splice(slideshow.currentSlideIndex + 1, 0, newSlide);
+            slideshow.currentSlideIndex++;
             slideshow.writeSlideToPage();
         });
 
