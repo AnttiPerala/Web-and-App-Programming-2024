@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objects</title>
+
+    <style>
+        button {
+            display: inline-block;
+            outline: 0;
+            border: 0;
+            cursor: pointer;
+            background-color: #e14242;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 16px;
+            border-bottom: 4px solid #b02b2b;
+            font-weight: 700;
+            color: white;
+            line-height: 26px;
+        }
+
+        .slideWrapper {
+            min-height: 80vh;
+            padding: 1rem;
+            margin: 1rem;
+            border: 1px black solid;
+            background-size: cover;
+            background-position: center;
+        }
+
+        #ui div {
+            margin: 0.5rem;
+        }
+
+        .selected {
+            border: 2px black dashed;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="ui">
+
+        <div id="buttonsRow">
+            <button id="btnPrevious">Previous</button>
+            <button id="btnAddNew">Add New Slide</button>
+            <button id="btnDuplicateSlide">Duplicate slide</button>
+            <button id="btnNext">Next</button>
+            <button id="btnStart">Start Presentation</button>
+            <button id="btnUndo">Undo</button>
+            <button id="btnRedo">Redo</button>
+            <button id="btnDeleteSlide">Delete Slide</button>
+            <button id="btnExportJSON">Export Slideshow</button>
+            <button id="btnImportJSON">Import Slideshow</button>
+            <input type="file" id="fileImportJSON" accept=".json" style="display:none">
+            <!-- we dont want to see ugly input buttons in the buttons row so we are hiding this one -->
+        </div>
+
+        <div id="toolsAndPropertiesRow">
+            <input type="color" id="colorPicker" value="#11B">
+            <input type="file" id="fileBG" accept="image/*">
+            <label for="textSize">Text size:</label>
+            <input type="number" id="textSize" value="16" style="width: 50px;">
+        </div>
+
+
+
+    </div>
+
+    <div id="slideContainer"></div>
+
+    <script>
+
+        let lastTouchedElement = null;
+        let undoStack = [];
+        let redoStack = [];
+        const slideContainer = document.querySelector('#slideContainer');
+        const btnPrevious = document.querySelector('#btnPrevious');
+        const btnStart = document.querySelector('#btnStart');
+        const btnNext = document.querySelector('#btnNext');
+        const btnAddNew = document.querySelector('#btnAddNew');
+        const btnDuplicateSlide = document.querySelector('#btnDuplicateSlide');
+        const colorPicker = document.querySelector('#colorPicker');
+        const fileBG = document.querySelector('#fileBG');
+        const btnExportJSON = document.querySelector('#btnExportJSON');
+        const btnImportJSON = document.querySelector('#btnImportJSON');
+        const fileImportJSON = document.querySelector('#fileImportJSON');
+        const textSize = document.querySelector('#textSize');
+        const btnDeleteSlide = document.querySelector('#btnDeleteSlide');
+
+        const btnUndo = document.querySelector('#btnUndo');
+        const btnRedo = document.querySelector('#btnRedo');
+
+        //create a master object for slideshows in order to demonstrate nested objects
+
+        let slideshow = {
+            slides: [],
+            currentSlideIndex: 0,
+            writeSlideToPage: function () {
+                slideContainer.innerHTML = ""; //clear out the previous slide
+                let slide = this.slides[this.currentSlideIndex]; //take a slide from the slides array based on the current slide index
+                let title = document.createElement("h1");
+                title.contentEditable = "true";
+                title.textContent = slide.title;
+                title.style.fontSize = `${slide.titleFontSize}px`;
+                title.onblur = () => this.updateSlideshow('title', title.textContent, title);
+                let mainText = document.createElement("p");
+                mainText.contentEditable = "true";
+                mainText.textContent = slide.mainText;
+                mainText.style.fontSize = `${slide.mainTextFontSize}px`;
+                mainText.onblur = () => this.updateSlideshow('mainText', mainText.textContent, mainText);
+                let slideWrapper = document.createElement("div");
+                slideWrapper.classList.add("slideWrapper");
+                slideWrapper.style.backgroundColor = slide.backgroundColor;
+                if (slide.backgroundImage) {
+                    slideWrapper.style.backgroundImage = `url(${slide.backgroundImage})`;
+                }
+                slideWrapper.appendChild(title);
+                slideWrapper.appendChild(mainText);
+                slideContainer.appendChild(slideWrapper); //adding the whole slide element to the page
+            },
+            updateSlideshow: function (property, value, element) {
+                //saveCurrentState();
+                let slide = this.slides[this.currentSlideIndex]; //take the current slide from the array of slides
+                slide[property] = value; //select a property from the slide object based on the passed in argument and assign it to the passed in value
+                lastTouchedElement = element; //assign the last touched element to the passed in element
+                document.querySelectorAll('.selected').forEach(element => element.classList.remove('selected')); //remove the selected class from all elements
+                lastTouchedElement.classList.add('selected'); //add a class to the last touched element
+                redoStack = [];
+            }
+        };
+
+
+        //an object constructor function
+        function Slide(myId, myTitle, myMainText, myBGColor, myBGImage) {
+            this.id = myId,
+                this.title = myTitle,
+                this.titleFontSize = 32,
+                this.mainText = myMainText,
+                this.mainTextFontSize = 16,
+                this.backgroundColor = myBGColor;
+            this.backgroundImage = myBGImage;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => { //when the page is loaded
+
+            const storedData = localStorage.getItem('slideshow'); //ask for a key called "slideshow" from the browser's storage (contains slides only, not the master slideshow object)
+            if (storedData) { //checking if we got something
+                slideshow.slides = JSON.parse(storedData); //parse the localStorage slides back to a javascript object and put them into the slideshow.slides 
+            } else {
+                //add some slides to the slideshow, we might delete these later when the program is more complete
+                slideshow.slides.push(new Slide(1, "Welcome to my slideshow!", "In this slideshow, you are going to learn about JavaScript objects.", "#33D", null));
+                slideshow.slides.push(new Slide(2, "Second page of the slideshow", "I was created with a different object!", "#DD1", null));
+
+            }
+            slideshow.writeSlideToPage(); //simply write the current slide to the page as html
+            saveCurrentState();
+        });
+
+
+        //EVENT LISTENERS
+        btnNext.addEventListener('click', () => {
+            if (slideshow.currentSlideIndex < slideshow.slides.length - 1) { //checking if there is a next slide
+                slideshow.currentSlideIndex++; //increment the current slide index
+                slideshow.writeSlideToPage(); //write the current slide to the page
+            } else {
+                alert("No more slides in this direction"); //if there is no next slide, alert the user
+            }
+        });
+
+        //START PRESENTATION MODE
+
+        btnStart.addEventListener('click', () => {
+            slideContainer.requestFullscreen(); //request fullscreen mode
+            document.querySelectorAll('.selected').forEach(element => element.classList.remove('selected'));
+
+        });
+
+        //Move between slides with arrow keys if in presentation mode
+        document.addEventListener('keydown', (event) => {
+
+            if (document.fullscreenElement === slideContainer) {
+                if (event.key === "ArrowRight" || event.key === " ") { //checking if the user pressed the right arrow key or the space bar
+                    event.preventDefault();
+                    btnNext.click();
+                }
+                if (event.key === "ArrowLeft") {
+                    btnPrevious.click();
+                }
+            }
+        })
+
+        btnPrevious.addEventListener('click', () => {
+            if (slideshow.currentSlideIndex > 0) {
+                slideshow.currentSlideIndex--;
+                slideshow.writeSlideToPage();
+            } else {
+                alert("No more slides in this direction");
+            }
+        });
+
+        //adding new slides from the button
+        btnAddNew.addEventListener('click', () => {
+            let newSlide = new Slide(slideshow.slides.length + 1, "New Slide", "This slide was created with a constructor function.", "#fff");
+            slideshow.slides.splice(slideshow.currentSlideIndex + 1, 0, newSlide); //add the new slide to the slideshow at the current slide index + 1
+            slideshow.currentSlideIndex++;
+            slideshow.writeSlideToPage();
+        });
+
+        //duplicate slide button
+        btnDuplicateSlide.addEventListener('click', () => {
+            const slideIndex = slideshow.currentSlideIndex; //get the current slide index
+            let newSlide = new Slide(slideshow.slides.length+1, slideshow.slides[slideIndex].title, slideshow.slides[slideIndex].mainText, slideshow.slides[slideIndex].backgroundColor, slideshow.slides[slideIndex].backgroundImage);
+            slideshow.slides.splice(slideshow.currentSlideIndex + 1, 0, newSlide); //add the new slide to the slideshow at
+            slideshow.currentSlideIndex++;
+            slideshow.writeSlideToPage();
+        })
+
+        //delete a slide
+        btnDeleteSlide.addEventListener('click', () => {
+            if (slideshow.slides.length > 1) {
+                let slideIndex = slideshow.currentSlideIndex; //get the current slide index
+                slideshow.slides.splice(slideIndex, 1); //remove the slide at the current slide index
+                if (slideIndex > 0) {
+                    slideshow.currentSlideIndex--; //if the current slide index is greater than 0,
+                }
+
+            }
+
+            slideshow.writeSlideToPage();
+
+        })
+
+
+        //pressing the undo button 
+        btnUndo.addEventListener('click', () => {
+            if (undoStack.length > 0) {
+                redoStack.push(JSON.stringify({
+                    slides: slideshow.slides,
+                    currentSlideIndex: slideshow.currentSlideIndex
+                }))
+                let prevState = undoStack.pop(); //pop the last state from the undo stack and store it in a variable
+                prevState = undoStack.pop();
+                restoreState(prevState); //restore the state from unod stack
+            }
+        })
+
+
+        btnRedo.addEventListener('click', () => {
+            if (redoStack.length > 0) {
+                saveCurrentState();
+                const nextState = redoStack.pop();
+                restoreState(nextState);
+            }
+        })
+
+        //TOOLS AND PROPERTIES
+
+        //Color Picker
+        colorPicker.addEventListener('input', () => {
+            let slide = slideshow.slides[slideshow.currentSlideIndex]; //get the current slide object
+            slide.backgroundColor = colorPicker.value; //set the background color of the slide to the color picker value
+            slideshow.writeSlideToPage(); //write the changes to the page
+        });
+
+        //Background image file picker
+        fileBG.addEventListener('change', () => {
+            const reader = new FileReader();
+            reader.onload = function (event) { //triggers when the file is read
+                let slide = slideshow.slides[slideshow.currentSlideIndex];
+                slide.backgroundImage = event.target.result;
+                slideshow.writeSlideToPage();
+            };
+
+            reader.readAsDataURL(fileBG.files[0]); //the result of this is handles on the .onload function
+        });
+
+        //Text size changer
+        textSize.addEventListener('input', () => {
+            if (lastTouchedElement) {
+                lastTouchedElement.style.fontSize = textSize.value + "px"; //set the font size of the last touched element to the value of the text size slider
+                let slide = slideshow.slides[slideshow.currentSlideIndex]; //get the current slide object
+                if (lastTouchedElement.tagName === 'H1') { //checking if the last touched element is a h1
+                    slide.titleFontSize = textSize.value; //set the title font size to the value of the text size slider
+                } else if (lastTouchedElement.tagName === 'P') {
+                    slide.mainTextFontSize = textSize.value; //set the main text font size to the value of the text size slider
+                }
+            }
+
+        });
+
+        textSize.addEventListener('change', () => {
+            saveCurrentState();
+        });
+
+        //JSON export
+        btnExportJSON.addEventListener('click', () => {
+            const dataStr = JSON.stringify(slideshow.slides); //convert the slideshow object to a string
+            triggerJSONDownload(dataStr);
+        });
+
+        function triggerJSONDownload(jsonString) {
+            const blob = new Blob([jsonString], { type: 'text/json' }); //create a blob from the json string. Blobs can store all kinds of data.
+            const url = window.URL.createObjectURL(blob); //create a url from the blob
+            const a = document.createElement('a'); //create a link element
+            a.href = url; //set the link element's href to the url
+            a.download = "slideshow-export.json"; //set the link element's download attribute to the filename we want to save it as
+            a.click(); //trigger the download
+            window.URL.revokeObjectURL(url); //free up memory
+        }
+
+        //JSON import
+        btnImportJSON.addEventListener('click', () => {
+            fileImportJSON.click(); //trigger the hidden file picker
+        });
+
+        fileImportJSON.addEventListener('change', () => {
+            const file = fileImportJSON.files[0]; //get the file from the file picker
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const importedSlides = JSON.parse(event.target.result); //parse the imported file as json
+                slideshow.slides = importedSlides; //set the imported slides to the slideshow object
+                slideshow.currentSlideIndex = 0; //go to the beginning of the slideshow
+                slideshow.writeSlideToPage();
+            }
+
+            reader.readAsText(file); //read the file as text
+
+        });
+
+        //Save to local storage every time we click anywhere on the page
+        document.body.addEventListener('click', () => {
+            saveSlideshowToLocalStorage();
+        })
+
+        function saveSlideshowToLocalStorage() {
+            const dataStr = JSON.stringify(slideshow.slides);
+            localStorage.setItem('slideshow', dataStr); //save the slideshow to local storage as a string
+        }
+
+        //a function for saving the current state of the program
+        function saveCurrentState() {
+            undoStack.push(JSON.stringify({
+                slides: slideshow.slides,
+                currentSlideIndex: slideshow.currentSlideIndex,
+            })); //add the current state of the slideshow to the undo stack
+        }
+
+        //a function for restoring the state of the program from a stack (undo or redo)
+
+        function restoreState(state) {
+            if (state) {
+                let stateObject = JSON.parse(state); //parse the state as a json object
+                slideshow.slides = stateObject.slides; //set the slides of the slideshow to the slides of the state object
+                slideshow.currentSlideIndex = stateObject.currentSlideIndex; //set the current slide index of the slideshow to the current slide index of the state object
+            }
+
+            slideshow.writeSlideToPage(); //write the slide to the page
+        }
+
+
+    </script>
+
+</body>
+
+</html>
