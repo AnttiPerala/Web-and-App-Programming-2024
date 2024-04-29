@@ -189,6 +189,7 @@
                     bullet.onkeypress = (event) => {this.handleKeyPress(event, bullet, slide)};
                     bullet.onfocus = () => this.currentParagraph = bullet;
                     bullet.onblur = () => this.updateSlideshow('mainTexts', bullet.textContent, index);
+                    bulletsContainer.appendChild(bullet);
                 })
                
                
@@ -199,7 +200,7 @@
                     slideWrapper.style.backgroundImage = `url(${slide.backgroundImage})`;
                 }
                 slideWrapper.appendChild(title);
-                slideWrapper.appendChild(mainText);
+                slideWrapper.appendChild(bulletsContainer);
                 slideContainer.appendChild(slideWrapper); //adding the whole slide element to the page
             },
             handleKeyPress: function (e, bullet, slide) {
@@ -320,9 +321,14 @@
 
         //adding new slides from the button
         btnAddNew.addEventListener('click', () => {
-            let newSlide = new Slide(slideshow.slides.length + 1, "New Slide", "This slide was created with a constructor function.", "#fff");
+            let newSlide = new Slide(slideshow.slides.length + 1, "New Slide", "#fff", null);
             slideshow.slides.splice(slideshow.currentSlideIndex + 1, 0, newSlide); //add the new slide to the slideshow at the current slide index + 1
             slideshow.currentSlideIndex++;
+            slideshow.slides[slideshow.currentSlideIndex].mainTexts.push({
+                text: "New structure",
+                fontSize: 16,
+                fontColor: "#fff"
+            });
             slideshow.writeSlideToPage();
         });
 
@@ -395,16 +401,8 @@
         });
 
         //Text size changer
-        textSize.addEventListener('input', () => {
-            if (lastTouchedElement) {
-                lastTouchedElement.style.fontSize = textSize.value + "px"; //set the font size of the last touched element to the value of the text size slider
-                let slide = slideshow.slides[slideshow.currentSlideIndex]; //get the current slide object
-                if (lastTouchedElement.tagName === 'H1') { //checking if the last touched element is a h1
-                    slide.titleFontSize = textSize.value; //set the title font size to the value of the text size slider
-                } else if (lastTouchedElement.tagName === 'P') {
-                    slide.mainTextFontSize = textSize.value; //set the main text font size to the value of the text size slider
-                }
-            }
+        textSize.addEventListener('input', function() {
+          slideshow.updateTextSize(this.value)
 
         });
 
