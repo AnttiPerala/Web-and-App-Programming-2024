@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Indexed DB Basic example</h1>
+    <button id="createDB">Create/Connect to Database</button>
+    <button id="addData">Add Data</button>
+    <button id="readData">Read Data</button>
+    <div id="output"></div>
+
+    <script>
+        let db;
+
+        document.getElementById('createDB').addEventListener('click', function () {
+           const myrequest = window.indexedDB.open('MyTestDatabase', 2); //open the database with a version of 1
+        
+           myrequest.onupgradeneeded = function (event) {
+
+            db = event.target.result;
+
+            let objectStore = db.createObjectStore('name', { keyPath: 'id', autoIncrement: true });
+
+            objectStore.createIndex('name', 'name', { unique: true });
+
+           } //if the database version is not 1, then run this code
+
+           myrequest.onsuccess = function (event) {
+            db = event.target.result;
+            console.log('Database created successfully');
+           }
+
+           myrequest.onerror = function (event) {
+            console.log('Error creating database');
+           }
+        
+        })
+
+        document.getElementById('addData').addEventListener('click', function () {
+            const myname = {id: 1, name: 'John Doe'};
+            const transaction = db.transaction(['name'],'readwrite'); //open a readwrite transaction
+            const objectStore = transaction.objectStore('name'); //access the object store
+            const request = objectStore.add(myname); //add the data to the object store
+
+            request.onsuccess = function (event) {
+                console.log('Data added successfully');
+            }
+
+        })
+
+        document.getElementById('readData').addEventListener('click', function () {
+            const transaction = db.transaction(['name'],'readonly'); //open a readonly transaction
+            const objectStore = transaction.objectStore('name');
+            const request = objectStore.get(1); //get the data with the key of 1
+
+            request.onsuccess = function (event) {
+                const data = request.result;
+                console.log(data);
+                document.getElementById('output').textContent = data.name;
+
+            }
+        })
+            
+    </script>
+</body>
+</html>
