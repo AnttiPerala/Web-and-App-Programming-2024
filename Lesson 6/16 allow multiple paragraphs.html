@@ -154,7 +154,12 @@
         }
 
         function initializeDefaultSlides() {
-            slideshow.slides.push(new Slide('1', "Title", "Pargraph text", "#33D", null));
+            slideshow.slides.push(new Slide('1', "Title", "#33D", null));
+            slideshow.slides[0].mainTexts.push({
+                text: "New structure",
+                fontSize: 16,
+                fontColor: "#fff"
+            });
             saveSlidesToDB();
             slideshow.writeSlideToPage();
         }
@@ -165,6 +170,7 @@
         let slideshow = {
             slides: [],
             currentSlideIndex: 0,
+            currentParagraph: null, //which paragraph shoudl font size change affect
             writeSlideToPage: function () {
                 slideContainer.innerHTML = ""; //clear out the previous slide
                 let slide = this.slides[this.currentSlideIndex]; //take a slide from the slides array based on the current slide index
@@ -180,6 +186,8 @@
                     bullet.textContent = paragraph.text;
                     bullet.style.fontSize = `${paragraph.fontSize}px`;
                     bullet.style.color = paragraph.fontColor;
+                    bullet.onkeypress = (event) => {this.handleKeyPress(event, bullet, slide)};
+                    bullet.onfocus = () => this.currentParagraph = bullet;
                     bullet.onblur = () => this.updateSlideshow('mainTexts', bullet.textContent, index);
                 })
                
@@ -195,7 +203,7 @@
                 slideContainer.appendChild(slideWrapper); //adding the whole slide element to the page
             },
             handleKeyPress: function (e, bullet, slide) {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter') { //when the user presses enter while editing text
                     e.preventDefault(); // Prevent default Enter key behavior
 
                     let newBullet = document.createElement("p");
@@ -244,14 +252,13 @@
 
 
         //an object constructor function
-        function Slide(myId, myTitle, myMainText, myBGColor, myBGImage) {
-            this.id = myId,
+        function Slide(myId, myTitle, myBGColor, myBGImage) {
+                this.id = myId,
                 this.title = myTitle,
                 this.titleFontSize = 32,
                 this.mainTexts = [],
-                this.mainTextFontSize = 16,
                 this.backgroundColor = myBGColor;
-            this.backgroundImage = myBGImage;
+                this.backgroundImage = myBGImage;
         }
 
        /*  document.addEventListener('DOMContentLoaded', () => { //when the page is loaded
