@@ -38,6 +38,11 @@
         .selected {
             border: 2px black dashed;
         }
+        
+        .slideWrapper p {
+            transition: opacity 1s ease-in-out;
+        }
+
     </style>
 </head>
 
@@ -293,19 +298,72 @@
         btnStart.addEventListener('click', () => {
             slideContainer.requestFullscreen(); //request fullscreen mode
             document.querySelectorAll('.selected').forEach(element => element.classList.remove('selected'));
-
+            prepareParagraphsForAnimation();
         });
+
+        //hide the paragraphs when the presentation starts
+
+        function prepareParagraphsForAnimation(){
+            let bullets = document.querySelectorAll('.slideWrapper p');
+            bullets.forEach(bullet => {
+                bullet.style.display = 'none';
+                bullet.style.opacity = 0;
+        })
+        currentParagraphIndex = 0;
+    }
+
+    function resetParagraphVisibility(){
+            let bullets = document.querySelectorAll('.slideWrapper p');
+            bullets.forEach(bullet => {
+                bullet.style.display = 'block';
+                bullet.style.opacity = 1;
+        })
+            currentParagraphIndex = 0;
+
+    }
+
+    //exit fullscreen 
+    document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) { //if the user exits fullscreen
+            resetParagraphVisibility();
+            slideshow.currentSlideIndex = 0;
+            slideshow.writeSlideToPage();
+        } 
+    })
+
+    //this function will reveal bullet points one by one as long as there still are new bullets to reveal
+
+    let currentParagraphIndex = 0; //keeps track of what paragraph we should reveal next
+
+    function animateNextParagraph(){
+        let bullets = document.querySelectorAll('.slideWrapper p');
+        if (currentParagraphIndex < bullets.length){ //we have not yet shown all the bullets
+            let bullet = bullets[currentParagraphIndex];
+            bullet.style.display = 'block';
+            setTimeout(() => {
+                bullet.style.opacity = 1;
+            },10)
+            currentParagraphIndex++;
+        } else {
+            slideshow.currentSlideIndex++;
+            slideshow.writeSlideToPage();
+            prepareParagraphsForAnimation();
+        }
+
+    }
 
         //Move between slides with arrow keys if in presentation mode
         document.addEventListener('keydown', (event) => {
 
             if (document.fullscreenElement === slideContainer) {
-                if (event.key === "ArrowRight" || event.key === " ") { //checking if the user pressed the right arrow key or the space bar
-                    event.preventDefault();
-                    btnNext.click();
-                }
-                if (event.key === "ArrowLeft") {
-                    btnPrevious.click();
+                switch (event.key){
+                    case "ArrowRight":
+                    case " ":
+                        animateNextParagraph();
+                        break;
+                    case "ArrowLeft":
+                        btnPrevious.click();
+                        break;
                 }
             }
         })
