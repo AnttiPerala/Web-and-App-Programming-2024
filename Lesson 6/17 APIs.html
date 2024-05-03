@@ -1,0 +1,43 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <script>
+        const endpoint = 'https://www.googleapis.com/youtube/v3/search';
+        const channelID = 'UCYbK_tjZ2OrIZFBvU6CCMiA';
+        const apiKey = 'AIzaSyBkTr1XWwgdamoiS4aMdOgnA3PISTV94Bo';
+        const url = `${endpoint}?key=${apiKey}&channelId=${channelID}&part=snippet,id&order=date&maxResults=25`;
+
+        fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw Error(response.statusText);
+            } //it was ok
+            return response.json();
+        })
+        .then(data => {
+            data.items.forEach(item => {
+                const videoID = item.id.videoId;
+                const p = document.createElement('p');
+                p.textContent = videoID;
+                //document.body.appendChild(p);
+
+                const iframe = document.createElement('iframe');
+                iframe.setAttribute('src', `https://www.youtube.com/embed/${videoID}`)
+                iframe.setAttribute('allowfullscreen', true);
+                document.body.appendChild(iframe);
+                
+            });
+        })
+
+
+    </script>
+</body>
+</html>
