@@ -25,7 +25,7 @@ function fetch_and_store_youtube_videos(){
             'interval' => 96, //Interval in hours
             'keywords' => [] //optionak keywords array. If left empty, we will get all videos from that channel.
         ]
-    ]
+    ];
 
     foreach ($channels as $channel) { //the individual item in each loop iteration will be called "channel"
         $current_time = current_time('mysql', true); //YYYY-MM-DD HH:MM:SS. The second argument is about the timezone (if true, it will use wordpress profile's timezone)
@@ -37,7 +37,7 @@ function fetch_and_store_youtube_videos(){
         ));
 
         //Check if it's already time to fetch new videos for this particular channel based on the interval and last fetched time
-        if(strtotime($current_time) - strtotime($last_fetched)) < ($channel['interval'] * HOUR_IN_SECONDS)){
+        if (strtotime($current_time) - strtotime($last_fetched) < ($channel['interval'] * HOUR_IN_SECONDS)){
             continue; //Continue causes the loop to immediately stop the current iteration and beging the next iteration of the loop
         }
 
@@ -88,7 +88,33 @@ function fetch_and_store_youtube_videos(){
 
     }
 
+} //end fetch_and_store_youtube_videos
+
+//Function to create the database table, if it doesnt already exists, on plugin activation
+
+function create_video_table_in_database(){
+    global $wpdb; //we need this global variable to be able to access the database
+    $table_name = $wpdb->prefix . 'youtube_videos'; //results in the table_name being wp_youtube_videos
+    $charset_collate = $wpdb->get_charset_collate(); //getting the charset and collate for the database
+
+    //creating the table using SQL
+
+    $sql = "CREATE TABLE $table_name (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        video_id varchar(255) NOT NULL,
+        title text NOT NULL,
+        description text NOT NULL,
+        thumbnail varchar(255) NOT NULL,
+        channel_id varchar(255) NOT NULL,
+        channel_name varchar(255) NOT NULL,
+        last_fetched datetime DEFAULT NULL,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+
+    require_once(ABSPATH. 'wp-admin/includes/upgrade.php'); //this file is included in the Wordpress core and is used to run the SQL queries
+    dbDelta($sql); //great function that ensures existing data in the database is preserved 
+
 }
 
-
-'https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=UCue7TFlrt9FxXarpsl872Dg&order=date&type=video&maxResults=10&key=AIzaSyBkTr1XWwgdamoiS4aMdOgnA3PISTV94Bo
+//call the table creation function on plugin activation
+register_activation_hook(__FILE__, 'create_video_table_in_database');
