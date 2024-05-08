@@ -16,7 +16,7 @@ function fetch_and_store_youtube_videos(){
             'id' => 'UCYbK_tjZ2OrIZFBvU6CCMiA',
             'name' => 'Brackeys',
             'interval' => 12, //Interval in hours
-            'keywords' => ['unity', 'unreal'] //optionak keywords array. If left empty, we will get all videos from that channel.
+            'keywords' => [] //optional keywords array. If left empty, we will get all videos from that channel.
         ],
 
         [
@@ -76,7 +76,7 @@ function fetch_and_store_youtube_videos(){
                 'video_id' => $video['id']['videoId'],
                 'title' => $title,
                 'description' => $video['snippet']['description'],
-                'thumbnail' =>['snippet']['thumbnails']['high']['url'],
+                'thumbnail' => $video['snippet']['thumbnails']['high']['url'],
                 'channel_id' => $channel['id'],
                 'channel_name' => $channel['name'],
                 'last_fetched' => $current_time
@@ -116,5 +116,34 @@ function create_video_table_in_database(){
 
 }
 
+//a function to display the latest videos on the front end
+function display_youtube_videos(){
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'youtube_videos';
+
+    //Fetch the latest 30 videos from the database
+    $results = $wpdb->get_results("SELECT * FROM $table_name ORDER BY id DESC LIMIT 30", OBJECT);
+
+    //start building the HTML output
+    $output = '<div class="youtube-videos">';
+    foreach($results as $video){
+        $output .= '<div class="video">'; //wrap each video in a div with a class of video
+        $output .= '<h3>' . esc_html($video->title) .  '</h3>'; //dipslay the title of the video
+        $output .= '<iframe width="560" height="315" src="https://www.youtube.com/embed/'. esc_attr($video->video_id). '" frameborder="0" allowfullscreen></iframe>'; //display the video
+        $output .= '</div>';
+    }
+    $output.= '</div>';
+
+    return $output;
+
+}
+
+//register the shortcode to display the videos
+add_shortcode('display_youtube_videos', 'display_youtube_videos');
+
+
 //call the table creation function on plugin activation
 register_activation_hook(__FILE__, 'create_video_table_in_database');
+
+//call the video fetching function once manually
+//fetch_and_store_youtube_videos();
