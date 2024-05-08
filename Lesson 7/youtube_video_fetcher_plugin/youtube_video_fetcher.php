@@ -2,14 +2,14 @@
 /* 
 Plugin Name: Youtube Video Fetcher
 Description: Fetches the latest videos from a youtube channel and stores them in a database and allows the user to display them using a shortcode
-Version 0.1
+Version 0.2
 Author: Antti Perälä
 
 */
 
 function fetch_and_store_youtube_videos(){
     global $wpdb;
-    $api_key = 'redacted';
+    $api_key = 'redact';
     $table_name = $wpdb->prefix . 'youtube_videos'; //results in the table_name being wp_youtube_videos
     $channels = [
         [
@@ -116,6 +116,15 @@ function create_video_table_in_database(){
 
 }
 
+
+//Fetch the videos on a regular basis (or at least check if there is something to fetch based on the interval)
+if (!wp_next_scheduled('fetch_youtube_videos')){
+    wp_schedule_event(time(), 'hourly', 'fetch_youtube_videos');
+}
+
+add_action('fetch_youtube_videos', 'fetch_and_store_youtube_videos');
+
+
 //a function to display the latest videos on the front end
 function display_youtube_videos(){
     global $wpdb;
@@ -140,6 +149,38 @@ function display_youtube_videos(){
 
 //register the shortcode to display the videos
 add_shortcode('display_youtube_videos', 'display_youtube_videos');
+
+//Function to render the admin page content
+function yvf_admin_page(){
+    ?>
+    <div class="wrap">
+        <h1>Fetch YouTube Videos</h1>
+        <form method="post" action="">
+            <?php submit_button('Fetch Videos Now', 'primary', 'fetch_videos') ?>
+        </form>
+    </div>
+    <?php
+
+    //Check if the user clicked the fetch videos button and call the fetching function
+    if (isset($_POST['fetch_videos'])){
+        fetch_and_store_youtube_videos();
+        echo '<div class="updated"><p>Videos fetched successfully</p></div>';
+    }
+}
+
+function yvf_add_admin_menu(){
+    add_menu_page(
+        'Youtube Video Fetcher', //Page title
+        'Youtube Video Fetcher', //Menu title
+        'manage_options', //capability required to see this menu
+        'youtube_video_fetcher', //Menu slug
+        'yvf_admin_page', //Function to render the admin page content
+        'dashicons-video-alt3', //Icon for the menu
+        6 //position on the menu
+    );
+}
+
+add_action('admin_menu', 'yvf_add_admin_menu');
 
 
 //call the table creation function on plugin activation
