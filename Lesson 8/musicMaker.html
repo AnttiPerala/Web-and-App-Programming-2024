@@ -21,6 +21,19 @@
             border: 1px black solid;
         }
 
+        .sound {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .sound img {
+            width: 70%;
+            height: 70%;
+            margin-top: 1em;
+        }
+
     </style>
 
 </head>
@@ -28,10 +41,22 @@
 <body>
 
     <div id="drum-sounds">
-        <div class="sound" draggable="true"></div>
-        <div class="sound" draggable="true"></div>
-        <div class="sound" draggable="true"></div>
-        <div class="sound" draggable="true"></div>
+        <div class="sound" draggable="true" data-sound-id="kick">
+            <img src="img/kick.png" alt="kick">
+            <h3>KICK</h3>
+        </div>
+        <div class="sound" draggable="true" data-sound-id="snare">
+            <img src="img/snare.png" alt="snare">
+            <h3>SNARE</h3>
+        </div>
+        <div class="sound" draggable="true" data-sound-id="hihat">
+            <img src="img/hihat.png" alt="hihat">
+            <h3>HIHAT</h3>
+        </div>
+        <div class="sound" draggable="true" data-sound-id="crash">
+            <img src="img/crash.png" alt="crash">
+            <h3>CRASH</h3>
+        </div>
     </div>
 
     <div class="slots">
@@ -50,6 +75,8 @@
     <script>
 
         const slots = document.querySelectorAll('.slot');
+
+        const drumSounds = document.querySelectorAll('.sound');
 
         slots.forEach(function (slot) {
             slot.addEventListener('dragover', function (event) {
@@ -70,6 +97,20 @@
 
         function handleDrop(e) {
             e.preventDefault();
+
+            e.target.appendChild
+
+        }
+
+        drumSounds.forEach(function (sound) {
+            sound.addEventListener('drag', function (event) {
+                handleDrag(event);
+            });
+
+        });
+
+        function handleDrag(event) {
+     
         }
     </script>
 
