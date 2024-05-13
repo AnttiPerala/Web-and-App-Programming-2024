@@ -42,19 +42,19 @@
 
     <div id="drum-sounds">
         <div class="sound" draggable="true" data-sound-id="kick">
-            <img src="img/kick.png" alt="kick">
+            <img src="img/kick.png" alt="kick" draggable="false">
             <h3>KICK</h3>
         </div>
         <div class="sound" draggable="true" data-sound-id="snare">
-            <img src="img/snare.png" alt="snare">
+            <img src="img/snare.png" alt="snare" draggable="false">
             <h3>SNARE</h3>
         </div>
         <div class="sound" draggable="true" data-sound-id="hihat">
-            <img src="img/hihat.png" alt="hihat">
+            <img src="img/hihat.png" alt="hihat" draggable="false">
             <h3>HIHAT</h3>
         </div>
         <div class="sound" draggable="true" data-sound-id="crash">
-            <img src="img/crash.png" alt="crash">
+            <img src="img/crash.png" alt="crash" draggable="false">
             <h3>CRASH</h3>
         </div>
     </div>
@@ -98,19 +98,21 @@
         function handleDrop(e) {
             e.preventDefault();
 
-            e.target.appendChild
+            let soundData = e.dataTransfer.getData("sound");
+            let soundElement = document.querySelector(`[data-sound-id="${soundData}"]`);
+            e.target.appendChild(soundElement);
 
         }
 
         drumSounds.forEach(function (sound) {
-            sound.addEventListener('drag', function (event) {
+            sound.addEventListener('dragstart', function (event) {
                 handleDrag(event);
             });
 
         });
 
-        function handleDrag(event) {
-     
+        function handleDrag(event) { //triggers when an element is being dragged
+            event.dataTransfer.setData("sound", event.target.dataset.soundId);     
         }
     </script>
 
