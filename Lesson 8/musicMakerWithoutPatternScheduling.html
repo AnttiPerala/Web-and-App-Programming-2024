@@ -128,20 +128,17 @@
 
         //A FUNCTION THAT LOOPS THROUGH THE SLOTS AND PLAYS THEM
 
-        function playPattern(){
+        function playPattern(index = 0){
             let tempo = tempoInput.value;
             let delay = 60000 / tempo; //BPM
-
-            for (let i = 0; i < slots.length; i++){
-                let slotDelay = delay * i;
-                setTimeout(function(){
-                    playSound(slots[i]); //call the playSound function and pass in the current slot html element0
-                }, slotDelay)
-    
-            }
+            playSound(index);
+            
         }
 
-        function playSound(slot){
+        function playSound(index){
+
+            if (index < slots.length){
+                let slot = slots[index];
             if (slot.hasChildNodes()){
                 let soundId = slot.firstChild.dataset.soundId;
                 let soundToBePlayed;
@@ -166,9 +163,14 @@
             let delay = 60000 / tempo; //BPM
             setTimeout(function(){
                 slot.style.backgroundColor = "white";
+                if (index + 1 < slots.length){
+                    playSound(index+1);
+                } else {
+                    playPattern();
+                }
             }, delay)
         }
-
+}
 
     </script>
 
