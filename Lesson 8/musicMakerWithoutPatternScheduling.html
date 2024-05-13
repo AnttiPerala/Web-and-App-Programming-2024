@@ -8,14 +8,16 @@
 
 
     <style>
-
-        .slots, #drum-sounds {
+        .slots,
+        #drum-sounds {
             display: flex;
             gap: 0.5vw;
             margin: 1vw;
+            flex-wrap: wrap;
         }
 
-        .slot, .sound {
+        .slot,
+        .sound {
             width: 10vw;
             height: 10vw;
             border: 1px black solid;
@@ -34,6 +36,13 @@
             margin-top: 1em;
         }
 
+        button {
+            margin: 0 0.5rem;
+        }
+
+        #ui {
+            padding: 1rem;
+        }
     </style>
 
 </head>
@@ -43,6 +52,13 @@
     <div id="ui">
         <label for="tempo">Tempo:</label>
         <input type="number" id="tempo" value="120" min="1" max="999" step="1">
+        <button id="play">Play</button>
+        <button id="stop">Stop</button>
+        <label for="loopToggle">Loop:</label>
+        <input type="checkbox" id="loopToggle" checked>
+        <label for="patternLength">Pattern length:</label>
+        <input type="number" id="patternLength" value="8" min="1" max="64" step="1">
+
     </div>
 
     <div id="drum-sounds">
@@ -77,14 +93,31 @@
 
     </div>
 
+    <img src="img/synth.png" alt="">
+
     <script>
 
-        const slots = document.querySelectorAll('.slot');
+        let d = document;
 
-        const drumSounds = document.querySelectorAll('.sound');
+        let isPlaying = false;
 
-        const tempoInput = document.querySelector('#tempo');
+        let currentTimeout;
 
+        const slotsContainer = d.querySelector('.slots');
+
+        let slots;
+
+        const drumSounds = d.querySelectorAll('.sound');
+
+        const tempoInput = d.querySelector('#tempo');
+
+        const btnPlay = d.querySelector('#play');
+
+        const btnStop = d.querySelector('#stop');
+
+        const inputPatternLength = d.querySelector('#patternLength');
+
+        slots = d.querySelectorAll('.slot');
         //MAKE THE SLOTS ACCEPT DRUM SOUNDS
         slots.forEach(function (slot) {
             slot.addEventListener('dragover', function (event) {
@@ -107,13 +140,14 @@
             e.preventDefault();
 
             let soundData = e.dataTransfer.getData("sound");
-            let soundElement = document.querySelector(`[data-sound-id="${soundData}"]`);
-            e.target.appendChild(soundElement);
+            let soundElement = d.querySelector(`[data-sound-id="${soundData}"]`);
+            let clonedNode = soundElement.cloneNode(true); //true clones the node and all its children
+            e.target.appendChild(clonedNode);
 
         }
 
 
-       //ATTACH DRAG EVENT LISTENERS TO ALL DRUM SOUNDS
+        //ATTACH DRAG EVENT LISTENERS TO ALL DRUM SOUNDS
         drumSounds.forEach(function (sound) {
             sound.addEventListener('dragstart', function (event) {
                 handleDrag(event);
@@ -121,56 +155,94 @@
 
         });
 
-         //HANDLE DRAGGING DRUM SOUNDS
+        //HANDLE DRAGGING DRUM SOUNDS
         function handleDrag(event) { //triggers when an element is being dragged
-            event.dataTransfer.setData("sound", event.target.dataset.soundId);     
+            event.dataTransfer.setData("sound", event.target.dataset.soundId);
         }
 
         //A FUNCTION THAT LOOPS THROUGH THE SLOTS AND PLAYS THEM
 
-        function playPattern(index = 0){
+        function playPattern(index = 0) {
+
             let tempo = tempoInput.value;
             let delay = 60000 / tempo; //BPM
-            playSound(index);
-            
+            isPlaying = true;
+            playSound(index);    
+
         }
 
-        function playSound(index){
-
-            if (index < slots.length){
+        function playSound(index) {
+            slots = d.querySelectorAll('.slot');
+            if (index < slots.length && isPlaying) {
                 let slot = slots[index];
-            if (slot.hasChildNodes()){
-                let soundId = slot.firstChild.dataset.soundId;
-                let soundToBePlayed;
-                switch (soundId){
-                    case 'kick':
-                        soundToBePlayed = new Audio('sounds/kick.wav');
-                        break;
-                    case 'snare':
-                        soundToBePlayed = new Audio('sounds/snare.wav');
-                        break;
-                    case 'hihat':
-                        soundToBePlayed = new Audio('sounds/hihat.wav');
-                        break;
-                    case 'crash':
-                        soundToBePlayed = new Audio('sounds/crash.wav');
-                        break;
+                if (slot.hasChildNodes()) {
+                    let soundId = slot.firstChild.dataset.soundId;
+                    let soundToBePlayed;
+                    switch (soundId) {
+                        case 'kick':
+                            soundToBePlayed = new Audio('sounds/kick.wav');
+                            break;
+                        case 'snare':
+                            soundToBePlayed = new Audio('sounds/snare.wav');
+                            break;
+                        case 'hihat':
+                            soundToBePlayed = new Audio('sounds/hihat.wav');
+                            break;
+                        case 'crash':
+                            soundToBePlayed = new Audio('sounds/crash.wav');
+                            break;
+                    }
+                    soundToBePlayed.play();
                 }
-                soundToBePlayed.play();
+                slot.style.backgroundColor = "green";
+                let tempo = tempoInput.value;
+                let delay = 60000 / tempo; //BPM
+                currentTimeout = setTimeout(function () {
+                    slot.style.backgroundColor = "white";
+                    if (index + 1 < slots.length) {
+                        playSound(index + 1);
+                    } else {
+                        if (document.getElementById('loopToggle').checked){
+                            playPattern();
+                        } else {
+                            isPlaying = false;
+                        }
+                        
+                    }
+                }, delay)
             }
-            slot.style.backgroundColor = "green";
-            let tempo = tempoInput.value;
-            let delay = 60000 / tempo; //BPM
-            setTimeout(function(){
-                slot.style.backgroundColor = "white";
-                if (index + 1 < slots.length){
-                    playSound(index+1);
-                } else {
-                    playPattern();
-                }
-            }, delay)
         }
-}
+
+        btnPlay.addEventListener('click', function () {
+            playPattern();
+        });
+
+        btnStop.addEventListener('click', function () {
+            clearTimeout(currentTimeout);
+            isPlaying = false;
+        });
+
+        //CHANGE PATTERN LENGTH:
+
+        inputPatternLength.addEventListener('change', function () {
+        
+            let patternLength = inputPatternLength.value;
+            slotsContainer.innerHTML = '';
+            
+            for (let i = 0; i < patternLength; i++) {
+                let slot = document.createElement('div');
+                slot.className ='slot';
+                slotsContainer.appendChild(slot);
+                slot.addEventListener('dragover', function (event) {
+                    allowDrop(event);
+                });
+
+                slot.addEventListener('drop', function (event) {
+                handleDrop(event);
+            });
+            }
+
+        });
 
     </script>
 
