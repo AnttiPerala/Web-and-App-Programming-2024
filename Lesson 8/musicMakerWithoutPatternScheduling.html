@@ -93,7 +93,14 @@
 
     </div>
 
-    <img src="img/synth.png" alt="">
+    <img id="synth" src="img/synth.png" alt="">
+
+    <select id="synthShape">
+        <option value="sine">Sine</option>´
+        <option value="square">Square</option>
+        <option value="sawtooth">Sawtooth</option>
+        <option value="triangle">Triangle</option>
+    </select>
 
     <script>
 
@@ -116,6 +123,10 @@
         const btnStop = d.querySelector('#stop');
 
         const inputPatternLength = d.querySelector('#patternLength');
+
+        const synth = d.querySelector('#synth');
+
+        const synthShape = d.querySelector('#synthShape');
 
         slots = d.querySelectorAll('.slot');
         //MAKE THE SLOTS ACCEPT DRUM SOUNDS
@@ -242,6 +253,36 @@
             });
             }
 
+        });
+
+
+        //SYNTH SOUNDS
+
+        let audioContext;
+
+        let oscillatorReference;
+
+        function playOscillator(){
+            const oscillator = audioContext.createOscillator();
+            oscillator.type = synthShape.value;
+            oscillator.frequency.value = 440;
+            oscillator.connect(audioContext.destination); //connect the sound to speakers
+            oscillator.start();
+            return oscillator;
+
+        }
+
+        //CHECK IF MOUSE IS OVER THE SYNTH BUTTON
+
+    synth.addEventListener('mouseover', function () {
+             audioContext = new AudioContext; //creates a new audio context
+             oscillatorReference = playOscillator();
+
+        });
+
+    synth.addEventListener('mouseout', function () {
+            oscillatorReference.stop();
+            audioContext.close();
         });
 
     </script>
