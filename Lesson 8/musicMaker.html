@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+
+    <style>
+
+        .slots, #drum-sounds {
+            display: flex;
+            gap: 0.5vw;
+            margin: 1vw;
+        }
+
+        .slot, .sound {
+            width: 10vw;
+            height: 10vw;
+            border: 1px black solid;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div id="drum-sounds">
+        <div class="sound" draggable="true"></div>
+        <div class="sound" draggable="true"></div>
+        <div class="sound" draggable="true"></div>
+        <div class="sound" draggable="true"></div>
+    </div>
+
+    <div class="slots">
+
+        <div class="slot"></div>
+        <div class="slot"></div>
+        <div class="slot"></div>
+        <div class="slot"></div>
+        <div class="slot"></div>
+        <div class="slot"></div>
+        <div class="slot"></div>
+        <div class="slot"></div>
+
+    </div>
+
+    <script>
+
+        const slots = document.querySelectorAll('.slot');
+
+        slots.forEach(function (slot) {
+            slot.addEventListener('dragover', function (event) {
+                allowDrop(event);
+            });
+
+            slot.addEventListener('drop', function (event) {
+                handleDrop(event);
+            });
+
+
+
+        });
+
+        function allowDrop(e) {
+            e.preventDefault();
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+        }
+    </script>
+
+</body>
+
+</html>
