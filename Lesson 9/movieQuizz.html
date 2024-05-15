@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <textarea id="subtitleInput"></textarea>
+    <button id="startGame">Start Game</button>
+
+    <div id="question"></div>
+
+    <div class="answerButtons">
+        <button id="beforeMidway">Before Midway</button>
+        <button id="afterMidway">After Midway</button>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+
+        const subtitleInput = document.querySelector('#subtitleInput');
+        const btnStartGame = document.querySelector('#startGame');
+        const btnBeforeMidway = document.querySelector('#beforeMidway');
+        const btnAfterMidway = document.querySelector('#afterMidway');
+        const questionOutput = document.querySelector('#question');
+        const resultOutput = document.querySelector('#result');
+
+        let currentQuoteObject;
+        let lastQuoteTime;
+        let quotes;
+
+        btnStartGame.addEventListener('click', function () {
+
+            quotes = parseSRT(subtitleInput.value);
+
+            console.log('quotes: ', quotes);
+
+            chooseRandomQuote();
+
+        })
+
+        function chooseRandomQuote(){
+            
+            let randomNumber = Math.floor(Math.random() * quotes.length);
+
+            currentQuoteObject = quotes[randomNumber];
+
+            let randomQuote = quotes[randomNumber].text;
+
+            questionOutput.textContent = randomQuote;
+
+            lastQuoteTime = quotes[quotes.length - 1].end;
+        }
+
+
+        btnAfterMidway.addEventListener('click', function () {
+
+            if (currentQuoteObject.start > lastQuoteTime / 2) {
+                resultOutput.textContent = "You got it!!";
+
+            } else {
+                resultOutput.textContent = "Not quite!";
+            }
+
+            chooseRandomQuote();
+        })
+
+        btnBeforeMidway.addEventListener('click', function () {
+
+
+            if (currentQuoteObject.start < lastQuoteTime / 2) {
+                resultOutput.textContent = "You got it!!";
+
+            } else {
+                resultOutput.textContent = "Not quite!";
+            }
+            chooseRandomQuote();
+        })
+
+
+        function parseSRT(srt) {
+            const blocks = srt.split(/\n{2,}/);
+            const quotes = blocks.map(block => {
+                const lines = block.split('\n');
+                if (lines.length >= 3) {
+                    const index = parseInt(lines[0], 10);
+                    const times = lines[1].split(' --> ');
+                    const start = timeStringToSeconds(times[0]);
+                    const end = timeStringToSeconds(times[1]);
+                    const text = lines.slice(2).join(' ');
+                    return { index, start, end, text };
+                }
+            }).filter(Boolean);
+            return quotes;
+        }
+
+
+        function timeStringToSeconds(timeStr) {
+            const parts = timeStr.split(':');
+            const seconds = parseFloat(parts[2].replace(',', '.'));
+            return parseInt(parts[0], 10) * 3600 + parseInt(parts[1], 10) * 60 + seconds;
+        }
+
+
+    </script>
+
+</body>
+
+</html>
