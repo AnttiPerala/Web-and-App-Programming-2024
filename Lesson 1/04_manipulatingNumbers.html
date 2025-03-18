@@ -55,13 +55,13 @@
 
         console.log(conversionUsingNumber);
 
-        let myFloat = 1.143325;
+        let myFloat = '1.143325'; //floats are numbers with decimal points
 
-        let floatConversionUsingNumber = Number(myFloat);
+        let floatConversionUsingNumber = Number(myFloat); //Number() can also convert a float to a number
 
-        console.log(floatConversionUsingNumber);
+        console.log(floatConversionUsingNumber); //1.143325
 
-        let parsingAFloatToAnInt = parseInt(myFloat);
+        let parsingAFloatToAnInt = parseInt(floatConversionUsingNumber); //parseInt() will convert a float to an int by truncating the decimal part
 
         console.log(parsingAFloatToAnInt); //1
 

@@ -19,7 +19,7 @@
 
         myString[0] = "J"; //does not work, because strings are immutable
 
-        console.log(myString);
+        console.log(myString); //still Hello
 
         myString += " World"; //this works because its actually creating a new string in the background
 
@@ -45,11 +45,11 @@
 
         let myChangedURL = myURLArray.join('.'); //joins the array back to a string
 
-        console.log(myChangedURL);
+        console.log(myChangedURL); //www.ournewdomain.com
 
-        let myBackwardsAlphabet = alphabetArray.reverse().join('');
+        let myBackwardsAlphabet = alphabetArray.reverse().join(''); //reverse the array and join it back to a string
 
-        console.log(myBackwardsAlphabet);
+        console.log(myBackwardsAlphabet); //zyxwvutsrqponmlkjihgfedcba
 
         //slice method
 
@@ -66,7 +66,7 @@
         let myLowerCaseString = "antti was not paying attention and forgot to capitalize the first character";
 
         //lets see how toUpperCase can help
-        let convertedToUpperCase = myLowerCaseString.toUpperCase();
+        let convertedToUpperCase = myLowerCaseString.toUpperCase(); //converts the whole string to uppercase
 
         console.log(convertedToUpperCase);
 
@@ -76,7 +76,7 @@
 
         //caps lock fixer
 
-        let capsLockFixer = document.getElementById("capsLockFixer");
+        let capsLockFixer = document.getElementById("capsLockFixer"); //
 
         capsLockFixer.addEventListener("keyup", function(event){
             const textToFix = this.value;

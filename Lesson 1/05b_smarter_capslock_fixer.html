@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <input type="text" id="capsLockFixer">
+
+    <div id="output"></div>
+
+
+<script>
+// Caps Lock Fixer with Sentence Capitalization
+
+let capsLockFixer = document.getElementById("capsLockFixer");
+
+capsLockFixer.addEventListener("keyup", function(event) {
+    const textToFix = this.value;
+    const fixedText = fixCapsLock(textToFix);
+    document.getElementById("output").textContent = fixedText;
+});
+
+function fixCapsLock(text) {
+    // Convert entire text to lowercase
+    text = text.toLowerCase();
+
+    // Capitalize first letter of each sentence
+    return text.replace(/(^\s*|[.!?]\s+)([a-z])/g, (match, before, letter) => before + letter.toUpperCase());
+}
+
+/* 
+Understanding the Regex Pattern /(^\s*|[.!?]\s+)([a-z])/g
+This regex is designed to find lowercase letters that need to be capitalized in a sentence.
+
+1. (^\s*|[.!?]\s+)
+This part captures the "prefix" before a lowercase letter that should be capitalized.
+
+^ → Matches the beginning of the string.
+\s* → Matches any number of spaces at the start of the string. This ensures the first word is properly capitalized, even if there are leading spaces.
+| → Acts as an "or" operator, meaning we can match either:
+The start of the string (^\s*)
+A punctuation mark followed by a space ([.!?]\s+).
+[.!?] → Matches any of these three punctuation marks: . (period), ! (exclamation mark), ? (question mark).
+\s+ → Matches one or more spaces after the punctuation. This ensures we're capturing proper sentence endings. Note that if there is no space after the . then the next letter wont be capitalized.
+2. ([a-z])
+This part captures a single lowercase letter that comes after the prefix.
+
+([a-z]) → Matches any lowercase letter (a to z) and captures it in group 2.
+Flags Used: /g
+g (global) → Ensures that the regex finds all matches in the string, not just the first one.
+How the Replacement Works
+This regex is used inside .replace() with a callback function:
+
+
+(match, before, letter) => before + letter.toUpperCase()
+match → The full matched text.
+before → Captures either the start of the string or a sentence-ending punctuation plus space.
+letter → The lowercase letter that needs to be capitalized.
+
+
+
+match (full match) → The entire matched portion of the string.
+before (capture group 1: (^\s*|[.!?]\s+)) → The detected sentence-starting condition:
+Either leading spaces (^\s*)
+Or a sentence-ending punctuation followed by spaces ([.!?]\s+).
+letter (capture group 2: ([a-z])) → The first lowercase letter of the new sentence that needs to be capitalized.
+
+How Capture Groups Map to Arguments
+In .replace(), the function arguments follow this pattern:
+
+
+.replace(regex, (match, group1, group2, group3, ..., offset, fullString) => { ... })
+match → The entire matched portion of the string.
+group1, group2, group3, ... → Capture groups in the order they appear in the regex.
+offset → The index where the match starts in the original string.
+fullString → The full original string.
+
+*/
+</script>
+</body>
+</html>

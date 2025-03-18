@@ -11,6 +11,8 @@
     
     <script>
 
+        //This example demonstrates the problem of global name space pollution by having multiple scripts, the global variable can be overwritten.
+
         var globalCounter = 0;
 
         document.getElementById("incrementButton").addEventListener('click', incrementCounter);
@@ -25,7 +27,7 @@
 
     <script>
 
-        var globalCounter = 10;
+        var globalCounter = 10; //this will overwrite the globalCounter variable from the previous script
         
     </script>
 
@@ -34,7 +36,7 @@
 
         var i = 100;
 
-        for (i = 0; i < 10; i++) { //the loop sets the global variable i to 0, which might be confusing
+        for (i = 0; i < 10; i++) { //the loop sets the global variable i to 0, which might be confusing. If the variable i was declared with let, it would not overwrite the global variable i.
             console.log(i);
         }
 
