@@ -25,7 +25,7 @@
 
     function exampleFunctionForHoisting(){
        
-        console.log(myLocalVariable);  //because vars get hoisted (prioritized) this will log "undefined"
+        console.log(myLocalVariable);  //because vars get hoisted (prioritized) this will log "undefined". Only declarations are hoisted, not initializations.
          var myLocalVariable = "I am local";
 
          //console.log(myUnhoistedVariable); //because lets are not hoisted, this will give an actual referenceError
