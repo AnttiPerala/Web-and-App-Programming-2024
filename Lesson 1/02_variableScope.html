@@ -21,6 +21,12 @@
 
     exampleFunction(); //call the function to execute it
 
+    //or to execute a function immediately you can convert it into an IIFE:
+    /*  (function(){
+        var myLocalVariable = "I am local";
+        console.log(myLocalVariable);
+    })(); */
+
     //console.log(myLocalVariable); //gives error because the variable doesnt exist outside the function
 
     function exampleFunctionForHoisting(){
